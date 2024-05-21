@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ZenWords</string>
+    <string name="clear">clear</string>
+    <string name="send">send</string>
+</resources>
