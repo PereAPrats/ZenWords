@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
+    android:onClick="bonus"
     tools:context=".MainActivity">
 
     <androidx.constraintlayout.widget.Guideline
@@ -121,18 +122,20 @@
 
     <TextView
         android:id="@+id/txtViewSolutions"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Has encertat 0 de X possibles:"
+        android:layout_width="369dp"
+        android:layout_height="88dp"
+        android:text="Has encertat 0 de X possibles: "
         android:textColor="#8C000000"
         app:layout_constraintStart_toStartOf="@+id/guideline5"
-        app:layout_constraintTop_toTopOf="@+id/guideline6" />
+        app:layout_constraintTop_toTopOf="@+id/guideline6"
+        app:layout_constraintWidth_max="@id/guideline7"
+        app:layout_constraintHeight_max="@id/guideline1"/>
 
     <TextView
         android:id="@+id/txtViewParaulaEntrada"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=""
+        android:text="@string/pBuida"
         android:textColor="#8C000000"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/guideline3"
@@ -156,6 +159,7 @@
         android:layout_width="100dp"
         android:layout_height="48dp"
         android:background="#00FFFFFF"
+        android:onClick="clear"
         android:text="@string/clear"
         android:textColor="#8C000000"
         android:textColorHighlight="#00FFFFFF"
@@ -169,6 +173,7 @@
         android:layout_width="100dp"
         android:layout_height="48dp"
         android:background="#00FFFFFF"
+        android:onClick="send"
         android:text="@string/send"
         android:textColor="#8C000000"
         android:textSize="12sp"
@@ -182,8 +187,9 @@
         android:layout_height="50dp"
         android:layout_marginEnd="15dp"
         android:background="#00FFFFFF"
+        android:onClick="setLletra"
         android:text="B"
-        android:textColor="#8C000000"
+        android:textColor="#A9000000"
         android:textSize="30sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/btnLetter7"
         app:layout_constraintEnd_toStartOf="@+id/btnLetter7" />
@@ -194,8 +200,9 @@
         android:layout_height="50dp"
         android:layout_marginEnd="15dp"
         android:background="#00FFFFFF"
+        android:onClick="setLletra"
         android:text="E"
-        android:textColor="#8C000000"
+        android:textColor="#A9000000"
         android:textSize="30sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/btnLetter6"
         app:layout_constraintEnd_toStartOf="@+id/btnLetter6" />
@@ -206,8 +213,9 @@
         android:layout_height="50dp"
         android:layout_marginStart="15dp"
         android:background="#00FFFFFF"
+        android:onClick="setLletra"
         android:text="D"
-        android:textColor="#8C000000"
+        android:textColor="#A9000000"
         android:textSize="30sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/btnLetter7"
         app:layout_constraintStart_toEndOf="@+id/btnLetter7" />
@@ -218,8 +226,9 @@
         android:layout_height="50dp"
         android:layout_marginStart="15dp"
         android:background="#00FFFFFF"
+        android:onClick="setLletra"
         android:text="G"
-        android:textColor="#8C000000"
+        android:textColor="#A9000000"
         android:textSize="30sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/btnLetter6"
         app:layout_constraintStart_toEndOf="@+id/btnLetter6" />
@@ -230,8 +239,9 @@
         android:layout_height="50dp"
         android:layout_marginTop="20dp"
         android:background="#00FFFFFF"
+        android:onClick="setLletra"
         android:text="A"
-        android:textColor="#8C000000"
+        android:textColor="#A9000000"
         android:textSize="30sp"
         app:layout_constraintEnd_toStartOf="@+id/guideline9"
         app:layout_constraintHorizontal_bias="0.502"
@@ -244,8 +254,9 @@
         android:layout_height="50dp"
         android:layout_marginBottom="43dp"
         android:background="#00FFFFFF"
+        android:onClick="setLletra"
         android:text="F"
-        android:textColor="#8C000000"
+        android:textColor="#A9000000"
         android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline9"
@@ -258,8 +269,9 @@
         android:layout_marginTop="15dp"
         android:layout_marginBottom="15dp"
         android:background="#00FFFFFF"
+        android:onClick="setLletra"
         android:text="C"
-        android:textColor="#8C000000"
+        android:textColor="#A9000000"
         android:textSize="30sp"
         app:layout_constraintBottom_toTopOf="@+id/btnLetter6"
         app:layout_constraintEnd_toEndOf="@+id/imgViewCircle"
@@ -274,6 +286,7 @@
         android:layout_marginBottom="25dp"
         android:background="#00FFFFFF"
         android:contentDescription="Reset Button"
+        android:onClick="reset"
         android:scaleType="centerInside"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -288,6 +301,7 @@
         android:layout_marginEnd="15dp"
         android:background="#00FFFFFF"
         android:contentDescription="Help Button"
+        android:onClick="ajuda"
         android:scaleType="centerInside"
         app:layout_constraintEnd_toStartOf="@+id/guideline7"
         app:layout_constraintTop_toTopOf="@+id/guideline3"
@@ -301,6 +315,7 @@
         android:layout_marginTop="25dp"
         android:background="#00FFFFFF"
         android:contentDescription="Random Button"
+        android:onClick="random"
         android:scaleType="centerInside"
         app:layout_constraintStart_toStartOf="@+id/guideline5"
         app:layout_constraintTop_toTopOf="@+id/guideline3"
@@ -323,13 +338,13 @@
         android:id="@+id/LinLay1"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/guideline11"
         app:layout_constraintEnd_toStartOf="@+id/guideline7"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/guideline5"
-        app:layout_constraintTop_toTopOf="@+id/guideline10"
-        app:layout_constraintVertical_bias="0.0"/>
+        app:layout_constraintTop_toTopOf="@+id/guideline10" />
 
     <LinearLayout
         android:id="@+id/LinLay2"
@@ -341,7 +356,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guideline5"
         app:layout_constraintTop_toTopOf="@+id/guideline11"
-        app:layout_constraintVertical_bias="0.0"/>
+        app:layout_constraintVertical_bias="0.0" />
 
     <LinearLayout
         android:id="@+id/LinLay3"
@@ -351,7 +366,7 @@
         app:layout_constraintBottom_toTopOf="@+id/guideline13"
         app:layout_constraintEnd_toStartOf="@+id/guideline7"
         app:layout_constraintStart_toStartOf="@+id/guideline5"
-        app:layout_constraintTop_toTopOf="@+id/guideline12"/>
+        app:layout_constraintTop_toTopOf="@+id/guideline12" />
 
     <LinearLayout
         android:id="@+id/LinLay4"
