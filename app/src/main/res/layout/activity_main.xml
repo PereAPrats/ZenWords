@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    android:onClick="bonus"
     tools:context=".MainActivity">
 
     <androidx.constraintlayout.widget.Guideline
@@ -126,10 +125,10 @@
         android:layout_height="88dp"
         android:text="Has encertat 0 de X possibles: "
         android:textColor="#8C000000"
+        app:layout_constraintHeight_max="@id/guideline1"
         app:layout_constraintStart_toStartOf="@+id/guideline5"
         app:layout_constraintTop_toTopOf="@+id/guideline6"
-        app:layout_constraintWidth_max="@id/guideline7"
-        app:layout_constraintHeight_max="@id/guideline1"/>
+        app:layout_constraintWidth_max="@id/guideline7" />
 
     <TextView
         android:id="@+id/txtViewParaulaEntrada"
@@ -198,7 +197,7 @@
         android:id="@+id/btnLetter2"
         android:layout_width="55dp"
         android:layout_height="50dp"
-        android:layout_marginEnd="15dp"
+        android:layout_marginEnd="7dp"
         android:background="#00FFFFFF"
         android:onClick="setLletra"
         android:text="E"
@@ -224,7 +223,7 @@
         android:id="@+id/btnLetter4"
         android:layout_width="55dp"
         android:layout_height="50dp"
-        android:layout_marginStart="15dp"
+        android:layout_marginStart="7dp"
         android:background="#00FFFFFF"
         android:onClick="setLletra"
         android:text="G"
@@ -329,6 +328,7 @@
         android:layout_marginBottom="25dp"
         android:background="#00FFFFFF"
         android:contentDescription="Random Button"
+        android:onClick="bonus"
         android:scaleType="centerInside"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline5"
@@ -342,14 +342,16 @@
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/guideline11"
         app:layout_constraintEnd_toStartOf="@+id/guideline7"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guideline5"
-        app:layout_constraintTop_toTopOf="@+id/guideline10" />
+        app:layout_constraintTop_toTopOf="@+id/guideline10"
+        app:layout_constraintVertical_bias="0.0" />
 
     <LinearLayout
         android:id="@+id/LinLay2"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/guideline12"
         app:layout_constraintEnd_toStartOf="@+id/guideline7"
@@ -362,6 +364,7 @@
         android:id="@+id/LinLay3"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/guideline13"
         app:layout_constraintEnd_toStartOf="@+id/guideline7"
@@ -372,6 +375,7 @@
         android:id="@+id/LinLay4"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/guideline14"
         app:layout_constraintEnd_toStartOf="@+id/guideline7"
@@ -382,6 +386,7 @@
         android:id="@+id/LinLay5"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/guideline15"
         app:layout_constraintEnd_toStartOf="@+id/guideline7"
