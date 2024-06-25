@@ -175,6 +175,7 @@ public class MainActivity extends AppCompatActivity {
                     if (solucionsOcultes.getLinea(p) != null) {
                         mostrarParaula(p, solucionsOcultes.getLinea(p));
                         solucionsOcultes.eliminarParaula(p);
+                        ajuda.remove(p);
                         if (!solucionsOcultes.iterator().hasNext()) {
                             partidaGuanyada();
                         } else {
