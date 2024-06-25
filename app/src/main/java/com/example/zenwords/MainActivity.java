@@ -174,7 +174,6 @@ public class MainActivity extends AppCompatActivity {
                         points.setText(Integer.toString(aux1));
                     }
                 }else{
-                    //TODO: Posar paraula en vermell
                     actualitzarEncertades(p);
                 }
             } else {
@@ -231,14 +230,14 @@ public class MainActivity extends AppCompatActivity {
 
         //Seleccionar paraula mes llarga
         paraula = agafarParaulaRandom(cataleg.conjuntValors(wordLength));
-        System.out.println("\nLa paraula es " + paraula);
+        //System.out.println("\nLa paraula es " + paraula);
 
         //Una vegada tenim la paraula asignam caracters als botons
         lletresBotons(paraula);
 
         //Seleccionar totes les paraules possibles
         solucions = new SolucionsCataleg();
-        System.out.println("Les solucions són: ");
+        //System.out.println("Les solucions són: ");
         for(int i = 3; i<= paraula.length(); i++){
             it = cataleg.conjuntValors(i).iterator();
             while(it.hasNext()){
@@ -246,8 +245,21 @@ public class MainActivity extends AppCompatActivity {
                 if(sol.esParaulaSol(paraula, aux)){
                     solucions.afegirParaula(aux);
                     possibles++;
-                    //ocultesLong[i] = ocultesLong[i] + 1;
-                    System.out.println(aux);
+                    ocultesLong[i-1] = ocultesLong[i-1] + 1;
+                    //System.out.println(aux);
+                }
+            }
+        }
+
+        for (int i = wordLength; i>=3; i--){
+            if (ocultesLong[i-1]>0){
+                possiblesOcultes++;
+            }
+            if (i==3 && possiblesOcultes<5){
+                if ((ocultesLong[i-1] >1) && (possiblesOcultes+(ocultesLong[i-1] -1) > 5)){
+                    possiblesOcultes = 5;
+                } else if (ocultesLong[i-1] > 1) {
+                    possiblesOcultes = possiblesOcultes + (ocultesLong[i-1] - 1);
                 }
             }
         }
@@ -355,26 +367,20 @@ public class MainActivity extends AppCompatActivity {
 
     private String agafarParaulaRandom(Set<String> valorsLong){
         String p = "";
-
         if(valorsLong == null){
             return p;
         }
 
+        int lengthSet = longSet(valorsLong);
         rand = new Random();
+        int pos = rand.nextInt(lengthSet);
         it = valorsLong.iterator();
-        int lengthSet = 0;
 
-        //Mirar el total de paraules
-        while (it.hasNext()) {
-            lengthSet++;
-            it.next();
-        }
         //Recorrer el conjunt fins a una posicio aleatoria
         it = valorsLong.iterator();
-        for(int i = 1; i < rand.nextInt(lengthSet); i++){
+        for(int i = 0; i < pos; i++){
             p = (String) it.next();
         }
-
         return p;
     }
 
@@ -399,66 +405,35 @@ public class MainActivity extends AppCompatActivity {
         return i;
     }
 
-    private void afegirOcultes(int i){
-
-    }
-
-    //TODO: Fer que el bucle no pugui ser infinit
     private void afegirOcultes(){
-        int length = wordLength - 1;
-        int afegides = 5;
-        int p = 0;
-        String aux2;
-        Integer i2;
+        String aux = "";
+        int pos = possiblesOcultes -1;
+        //System.out.println("\nLes paraules ocultes son:\n" + "Paraula a la posicio "+ possiblesOcultes + ": " +paraula);
 
-        //Mirar quantes paraules hi ha collint una de cada conjunt i la resta possibles, de tres
-        System.out.println("Word lenth = " + wordLength);
-        for (int i = wordLength; i >= 3; i--) {
-            if ((longSet(solucions.getValue(i)) > 0) && (i != 3)) {
-                p++;
-            }else if(i == 3){
-                p = p + (longSet(solucions.getValue(i)));
+        solucionsOcultes.addParaula(paraula, possiblesOcultes);
+        for (int i = wordLength-1; i>=3; i--){
+            if (ocultesLong[i-1]>0){
+                //System.out.println("S'agafará el conjunt de valors de longitud " + i + " que correspon a la posició de l'array " + (i-1));
+                //System.out.println("El conjunt de paraules de longitud " + i + " es de " + longSet(solucions.getValue(i)));
+                aux = agafarParaulaRandom(solucions.getValue(i));
+                solucionsOcultes.addParaula(aux, pos);
+                //System.out.println("Paraula a la posicio " + pos + ": " + aux);
+                pos--;
             }
         }
-        System.out.println("p = " + p);
-        textViews = new TextView[p][];
-
-        //Es mira si es poden afegir 5 paraules o no;
-        if(p<5){
-            afegides = p;
-            possiblesOcultes = p;
-        }else {
-            possiblesOcultes = afegides;
-        }
-        System.out.println("possiblesOcultes = " + possiblesOcultes);
-
-        solucionsOcultes.addParaula(paraula, afegides);
-        afegides--;
-        System.out.println("\nLes paraules ocultes son:\nlongitud " + wordLength + ": " + paraula);
-        for(int i = afegides; i > 0; i--) {
-            System.out.println("for(){}");
-            //Cercam una paraula random de la llargaria length, si la paraula random ja es a ocultes, s'en cerca una altre
-            do {
-                aux2 = agafarParaulaRandom(solucions.getValue(length));
-                i2 = solucionsOcultes.getLinea(aux2);
-                System.out.println("do while{}");
-            } while (i2 != null);
-
-            //Una vegada es te la paraula, se comprova que no sigui buida (vol dir que no hi ha paraules de la llargaria length)
-            if (!aux2.equals("")) {
-                //Si no es buida, la paraula s'afageix al cataleg de ocultes
-                System.out.println("Longitud " + length + ": " + aux2);
-                solucionsOcultes.addParaula(aux2, i);
-                afegides++;
-            }else{
-                i++;
-            }
-
-            //Si la llargarie de la paraula trobada es major a tres es decrementa length per a cercar la seguent paraula mes petita
-            if (length > 3) {
-                length--;
+        if (pos>0){
+            for (int i = ocultesLong[2]; i>=0 && pos>0; i--){
+                do {
+                    aux = agafarParaulaRandom(solucions.getValue(3));
+                }while (solucionsOcultes.getLinea(aux) != null);
+                solucionsOcultes.addParaula(aux, pos);
+                //System.out.println("Paraula a la posicio " + pos + ": " + aux);
+                pos--;
             }
         }
+
+        textViews = new TextView[possiblesOcultes][];
+
     }
 
     private void mostrarParaula(String p, int pos){
