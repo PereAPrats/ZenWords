@@ -246,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
                 if(sol.esParaulaSol(paraula, aux)){
                     solucions.afegirParaula(aux);
                     possibles++;
-                    ocultesLong[i] = ocultesLong[i] + 1;
+                    //ocultesLong[i] = ocultesLong[i] + 1;
                     System.out.println(aux);
                 }
             }
