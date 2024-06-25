@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -29,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private catalegLongituds cataleg;               //Cataleg amb tot el diccioonari agrupat per longitud i sense accents
     private SolucionsCataleg solucions;             //Solucions que l'usuari encara no ha trobat agrupadres per longitud
     private StringKeyManager solucionsOcultes;      //Les 5 solucions que es mostren per pantalla
+    private Set<String> ajuda;
     private solTrobades solucionsTrobades;          //Solucions encertades per l'usuari que ja es mostren al text view
 
     private final EsParaulaSolucio sol = new EsParaulaSolucio();
@@ -122,7 +124,18 @@ public class MainActivity extends AppCompatActivity {
         int points = Integer.parseInt(pts.getText().toString());
 
         if (points >= 5){
-            //TODO: Mostrar lletra random
+            String aux = "";
+            rand = new Random();
+            int i = rand.nextInt(longSet(ajuda));
+            it = ajuda.iterator();
+            for (int j = 0; j<i; j++){
+                aux = it.next().toString();
+            }
+            i = solucionsOcultes.getLinea(aux);
+            textViews[i][rand.nextInt(aux.length())].setTextColor(txtColor);
+            points = points - 5;
+            pts.setText(Integer.toString(points));
+            ajuda.remove(aux);
         }else {
             mostrarMissatge("Punts insuficients", false);
         }
@@ -207,6 +220,7 @@ public class MainActivity extends AppCompatActivity {
         solucionsTrobades = new solTrobades();
         solucionsOcultes = new StringKeyManager();
         solucions = new SolucionsCataleg();
+        ajuda = new HashSet<>();
 
         possibles = 0;
         encertades = 0;
@@ -244,6 +258,7 @@ public class MainActivity extends AppCompatActivity {
                 aux = it.next().toString();
                 if(sol.esParaulaSol(paraula, aux)){
                     solucions.afegirParaula(aux);
+                    System.out.println(aux);
                     possibles++;
                     ocultesLong[i-1] = ocultesLong[i-1] + 1;
                     //System.out.println(aux);
@@ -273,6 +288,7 @@ public class MainActivity extends AppCompatActivity {
             int i;
             while (it.hasNext()){
                 aux = it.next().toString();
+                ajuda.add(aux);
                 i = solucionsOcultes.getLinea(aux);
                 textViews[i-1] = crearFilaTextViews(linLayouts[i-1], aux);
             }
@@ -378,7 +394,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Recorrer el conjunt fins a una posicio aleatoria
         it = valorsLong.iterator();
-        for(int i = 0; i < pos; i++){
+        for(int i = 0; i <= pos; i++){
             p = (String) it.next();
         }
         return p;
