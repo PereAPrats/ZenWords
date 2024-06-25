@@ -5,37 +5,43 @@
  */
 package com.example.zenwords;
 
+import android.content.Context;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
 public class cAcentoSin {
+    private Context context;
      private Map<String, String> catalogo;
 
-    public cAcentoSin(String rutaArchivo) {
-        catalogo = new HashMap<>();
-        cargarCatalogo(rutaArchivo);
+    public cAcentoSin(Context context) throws IOException {
+        this.catalogo = new HashMap<>();
+        this.context = context;
+        cargarCatalogo();
     }
 
-    private void cargarCatalogo(String rutaArchivo) {
-        try (BufferedReader br = new BufferedReader(new FileReader(rutaArchivo))) {
-            String linea;
-            while ((linea = br.readLine()) != null) {
-                String[] partes = linea.split(";");
-                if (partes.length == 2) {
-                    String sinAcentos = partes[1].trim();
-                    String conAcentos = partes[0].trim();
-                    catalogo.put(sinAcentos, conAcentos);
-                }
+    private void cargarCatalogo() throws IOException{
+        InputStream is = context.getResources().openRawResource(R.raw.paraules2);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        String linia;
+
+        while ((linia = reader.readLine()) != null) {
+            String[] paraules = linia.split(";");
+
+            if (paraules.length == 2) {
+                String sinAcentos = paraules[1].trim();
+                String conAcentos = paraules[0].trim();
+                catalogo.put(sinAcentos, conAcentos);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
     public String buscarConAcentos(String palabraSinAcentos) {
-        return catalogo.getOrDefault(palabraSinAcentos, "Palabra no encontrada");
+        return catalogo.get(palabraSinAcentos);
     }
 }

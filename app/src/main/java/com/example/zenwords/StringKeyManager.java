@@ -23,6 +23,8 @@ public class StringKeyManager {
     public Integer addParaula(String key, int value) {
         return paraulesOcultes.put(key, value);
     }
+
+
   
     public boolean eliminarParaula(String key) {
         if (paraulesOcultes.containsKey(key)) {
@@ -40,9 +42,5 @@ public class StringKeyManager {
         Set<String> keys = paraulesOcultes.keySet();
         return keys.iterator();
     }
-
-  
-
-
 }
 

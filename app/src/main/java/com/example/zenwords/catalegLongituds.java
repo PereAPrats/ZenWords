@@ -1,18 +1,33 @@
 package com.example.zenwords;
 
 import android.content.Context;
+
 import java.io.*;
 import java.util.*;
 
-public class LongitudCataleg {
+public class catalegLongituds {
     private Context context;
     private Map<Integer, Set<String>> cataleg;
 
     // Constructor que inicialitza el catàleg a partir d'un fitxer
-    public LongitudCataleg(Context context) throws IOException {
+    public catalegLongituds(Context context) throws IOException {
         this.cataleg = new HashMap<>();
         this.context = context;
         crearCataleg();
+    }
+
+    public catalegLongituds(){
+        cataleg = new TreeMap<>();
+    }
+
+    public void afegirParaula(String paraula){
+        if(cataleg.containsKey(paraula.length())){
+            cataleg.get(paraula.length()).add(paraula);
+        }else{
+            Set<String> set = new HashSet<>();
+            set.add(paraula);
+            cataleg.put(paraula.length(), set);
+        }
     }
 
 

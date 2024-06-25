@@ -6,8 +6,8 @@ import androidx.constraintlayout.widget.ConstraintSet;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
@@ -25,11 +25,11 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    private LongitudCataleg cataleg;                //Cataleg amb tot el diccioonari agrupat per longitud i sense accents
-    private solTrobades solucionsTrobades;          //Solucions encertades per l'usuari que ja es mostren al text view
-    private StringKeyManager solucionsOcultes;      //Les 5 solucions que es mostren per pantalla
-    private SolucionsCataleg solucionsPossibles;    //Solucions que l'usuari encara no ha trobat agrupadres per longitud
     private cAcentoSin catalegAccents;              //Cataleg amb totes les paraules amb i sense accent
+    private catalegLongituds cataleg;               //Cataleg amb tot el diccioonari agrupat per longitud i sense accents
+    private SolucionsCataleg solucions;             //Solucions que l'usuari encara no ha trobat agrupadres per longitud
+    private StringKeyManager solucionsOcultes;      //Les 5 solucions que es mostren per pantalla
+    private solTrobades solucionsTrobades;          //Solucions encertades per l'usuari que ja es mostren al text view
 
     private final EsParaulaSolucio sol = new EsParaulaSolucio();
     private final Button[] botons = new Button[7];
@@ -37,21 +37,23 @@ public class MainActivity extends AppCompatActivity {
 
     private LinearLayout[] linLayouts = new LinearLayout[5];
     private TextView[][] textViews;
+    private int[] ocultesLong;
 
     private int wordLength;
     private int encertades;
-    private int guanyat;
     private int possibles;
     private int possiblesOcultes;
     private final int minLength = 4;
     private final int maxLength = 7;
     private final int maxLetterboxDimDp = 50;
+    private final int txtColor = Color.parseColor("#A9000000");
 
     private String paraula;
 
     private Iterator it;
 
     private Random rand;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +78,8 @@ public class MainActivity extends AppCompatActivity {
 
         //Crear cataleg
         try {
-            cataleg = new LongitudCataleg(this);
+            cataleg = new catalegLongituds(this);
+            catalegAccents = new cAcentoSin(this);
         } catch (IOException ex) {
             Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -151,16 +154,16 @@ public class MainActivity extends AppCompatActivity {
         String p = txt.getText().toString().toLowerCase();
 
         if(!(p.equals("") || p.length() < 3)) {
-            if (solucionsPossibles.getValue(p.length()).contains(p.toLowerCase())) {
+            if (solucions.getValue(p.length()).contains(p.toLowerCase())) {
                 if (!(solucionsTrobades.contains(txt.getText().toString()))) {
                     solucionsTrobades.agregarElemento(txt.getText().toString());
                     encertades++;
-                    actualitzarEncertades();
+                    actualitzarEncertades("");
                     if (solucionsOcultes.getLinea(p) != null) {
-                        guanyat++;
-                        mostrarParaula(p);
-                        if (guanyat == possiblesOcultes) {
-                            mostrarMissatge("Has guanyat!!!!", true);
+                        mostrarParaula(p, solucionsOcultes.getLinea(p));
+                        solucionsOcultes.eliminarParaula(p);
+                        if (!solucionsOcultes.iterator().hasNext()) {
+                            partidaGuanyada();
                         } else {
                             mostrarMissatge("Encertada!!", false);
                         }
@@ -172,6 +175,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }else{
                     //TODO: Posar paraula en vermell
+                    actualitzarEncertades(p);
                 }
             } else {
                 mostrarMissatge("La paraula " + txt.getText().toString() + " no es vàlida", false);
@@ -203,12 +207,16 @@ public class MainActivity extends AppCompatActivity {
         rand = new Random();
         solucionsTrobades = new solTrobades();
         solucionsOcultes = new StringKeyManager();
-        solucionsPossibles = new SolucionsCataleg();
+        solucions = new SolucionsCataleg();
 
         possibles = 0;
         encertades = 0;
-        guanyat = 0;
         possiblesOcultes = 0;
+
+        findViewById(R.id.btnHelp).setEnabled(true);
+        findViewById(R.id.btnRandom).setEnabled(true);
+        findViewById(R.id.btnClear).setEnabled(true);
+        findViewById(R.id.btnSend).setEnabled(true);
 
         TextView points = findViewById(R.id.textViewPoints);
         points.setText("0");
@@ -216,6 +224,10 @@ public class MainActivity extends AppCompatActivity {
 
         //Seleccionar longitud
         wordLength = rand.nextInt((maxLength-minLength) + 1) + minLength;
+        ocultesLong = new int[wordLength];
+        for (int i: ocultesLong) {
+            i = 0;
+        }
 
         //Seleccionar paraula mes llarga
         paraula = agafarParaulaRandom(cataleg.conjuntValors(wordLength));
@@ -225,15 +237,16 @@ public class MainActivity extends AppCompatActivity {
         lletresBotons(paraula);
 
         //Seleccionar totes les paraules possibles
-        solucionsPossibles = new SolucionsCataleg();
+        solucions = new SolucionsCataleg();
         System.out.println("Les solucions són: ");
         for(int i = 3; i<= paraula.length(); i++){
             it = cataleg.conjuntValors(i).iterator();
             while(it.hasNext()){
                 aux = it.next().toString();
                 if(sol.esParaulaSol(paraula, aux)){
-                    solucionsPossibles.afegirParaula(aux);
+                    solucions.afegirParaula(aux);
                     possibles++;
+                    ocultesLong[i] = ocultesLong[i] + 1;
                     System.out.println(aux);
                 }
             }
@@ -244,12 +257,17 @@ public class MainActivity extends AppCompatActivity {
 
         //Mostrar els text views sense les lletres
         it = solucionsOcultes.iterator();
-        for (int i = 0; it.hasNext(); i++){
-            textViews[i] = crearFilaTextViews(linLayouts[i], it.next().toString().length());
+        if(it != null){
+            int i;
+            while (it.hasNext()){
+                aux = it.next().toString();
+                i = solucionsOcultes.getLinea(aux);
+                textViews[i-1] = crearFilaTextViews(linLayouts[i-1], aux);
+            }
         }
 
         //Actualitzar text view de les solucions encertades
-        actualitzarEncertades();
+        actualitzarEncertades("");
     }
 
     private void mostrarMissatge(String msg, boolean llarg){
@@ -284,10 +302,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void actualitzarEncertades(){
+    private void actualitzarEncertades(String p){
         TextView encertades = findViewById(R.id.txtViewSolutions);
         String txt;
         txt = "Has encertat " + this.encertades + " de " + possibles + " possibles: ";
+        p = catalegAccents.buscarConAcentos(p.toLowerCase());
 
 
         if (solucionsTrobades.obtenerCatalogoOrdenado() != null){
@@ -295,16 +314,21 @@ public class MainActivity extends AppCompatActivity {
             String aux;
             while (it.hasNext()){
                 aux = it.next().toString();
-                txt = txt + aux + ", ";
+                if (aux.toLowerCase().equals(p)){
+                    txt = txt + "<font color = 'red' >" + p.toUpperCase() + "</font>, ";
+                }else{
+                    txt = txt + aux + ", ";
+                }
             }
         }
 
-        encertades.setText(txt);
+        encertades.setText(Html.fromHtml(txt));
     }
 
-    private TextView[] crearFilaTextViews(LinearLayout linLayout, int lletres){
-        TextView[] textViews = new TextView[lletres];
+    private TextView[] crearFilaTextViews(LinearLayout linLayout, String p){
+        TextView[] textViews = new TextView[p.length()];
         ConstraintSet constSet = new ConstraintSet();
+        p = catalegAccents.buscarConAcentos(p);
 
         int id;
         int dim = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, maxLetterboxDimDp, getResources().getDisplayMetrics());
@@ -313,13 +337,14 @@ public class MainActivity extends AppCompatActivity {
         params.setMargins(4, 4, 4, 4);
         linLayout.removeAllViews();
 
-        for (int i = 0; i < lletres; i++){
+        for (int i = 0; i < p.length(); i++){
             id = View.generateViewId();
             textViews[i] = new TextView(this);
             textViews[i].setId(id);
-            textViews[i].setTextColor(Color.parseColor("#A9000000"));
+            textViews[i].setTextColor(Color.TRANSPARENT);
             textViews[i].setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             textViews[i].setTextSize(30);
+            textViews[i].setText(Character.toString(p.charAt(i)).toUpperCase());
             textViews[i].setBackgroundResource(R.drawable.letterbox);
             textViews[i].setLayoutParams(params);
             linLayout.addView(textViews[i]);
@@ -374,6 +399,10 @@ public class MainActivity extends AppCompatActivity {
         return i;
     }
 
+    private void afegirOcultes(int i){
+
+    }
+
     //TODO: Fer que el bucle no pugui ser infinit
     private void afegirOcultes(){
         int length = wordLength - 1;
@@ -382,12 +411,13 @@ public class MainActivity extends AppCompatActivity {
         String aux2;
         Integer i2;
 
+        //Mirar quantes paraules hi ha collint una de cada conjunt i la resta possibles, de tres
         System.out.println("Word lenth = " + wordLength);
         for (int i = wordLength; i >= 3; i--) {
-            if ((longSet(solucionsPossibles.getValue(i)) > 0) && (i != 3)) {
+            if ((longSet(solucions.getValue(i)) > 0) && (i != 3)) {
                 p++;
             }else if(i == 3){
-                p = p + (longSet(solucionsPossibles.getValue(i)));
+                p = p + (longSet(solucions.getValue(i)));
             }
         }
         System.out.println("p = " + p);
@@ -406,10 +436,12 @@ public class MainActivity extends AppCompatActivity {
         afegides--;
         System.out.println("\nLes paraules ocultes son:\nlongitud " + wordLength + ": " + paraula);
         for(int i = afegides; i > 0; i--) {
+            System.out.println("for(){}");
             //Cercam una paraula random de la llargaria length, si la paraula random ja es a ocultes, s'en cerca una altre
             do {
-                aux2 = agafarParaulaRandom(solucionsPossibles.getValue(length));
+                aux2 = agafarParaulaRandom(solucions.getValue(length));
                 i2 = solucionsOcultes.getLinea(aux2);
+                System.out.println("do while{}");
             } while (i2 != null);
 
             //Una vegada es te la paraula, se comprova que no sigui buida (vol dir que no hi ha paraules de la llargaria length)
@@ -429,19 +461,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void mostrarParaula(String p){
-        int pos = 0;
-        it = solucionsOcultes.iterator();
-        for(int i = 0; it.hasNext(); i++){
-            if(p.equals(it.next().toString())){
-                pos = i;
-                break;
-            }
+    private void mostrarParaula(String p, int pos){
+        for(int i = 0; i < p.length(); i++){
+            textViews[pos-1][i].setTextColor(txtColor);
         }
+    }
 
-        //System.out.println("Length de texviews[i] " + textViews[pos].length + "Lenth de paraula " + p.length());
-        for (int i = 0; i <textViews[pos].length; i++){
-            textViews[pos][i].setText(Character.toString(p.charAt(i)).toUpperCase());
+    private void partidaGuanyada(){
+        mostrarMissatge("Has guanyat!!!!", true);
+        findViewById(R.id.btnHelp).setEnabled(false);
+        findViewById(R.id.btnRandom).setEnabled(false);
+        findViewById(R.id.btnClear).setEnabled(false);
+        findViewById(R.id.btnSend).setEnabled(false);
+
+        for (int i = 0; i<botonsActius.length; i++){
+            botonsActius[i].setEnabled(false);
         }
     }
 }
